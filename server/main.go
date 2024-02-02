@@ -7,7 +7,9 @@ import (
 )
 
 func main() {
+
 	router := gin.Default()
+
 	router.GET("/ping", ping)
 
 	router.Run("localhost:8080")
