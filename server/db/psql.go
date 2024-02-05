@@ -24,7 +24,8 @@ type PsqlDatabase struct {
 
 func BuildConnString(EnvVariables map[string]string) string {
 	// urlExample := "postgres://username:password@localhost:5432/database_name"
-	connString := "postgres://" + EnvVariables["DATABASE_USERNAME"] + ":" + EnvVariables["DATABASE_PASSWORD"] + "@" + EnvVariables["DATABASE_ADDRESS"] + ":" + EnvVariables["SERVER_PORT"] + "/" + EnvVariables["DATABASE_NAME"]
+	connString := "postgres://" + EnvVariables["DATABASE_USERNAME"] + ":" + EnvVariables["DATABASE_PASSWORD"] + "@" + EnvVariables["DATABASE_ADDRESS"] + ":" + EnvVariables["DATABASE_PORT"] + "/" + EnvVariables["DATABASE_NAME"]
+	println(connString)
 	return connString
 }
 
@@ -36,11 +37,22 @@ func BuildConnString(EnvVariables map[string]string) string {
 	Returns: PsqlDatabase Wrapper Object, error if any
 */
 
-func NewPsqlDatabase(EnvVariables map[string]string) (*PsqlDatabase, error) {
+func NewPsqlDatabase(EnvVariables map[string]string) *pgx.Conn {
 	conn, err := pgx.Connect(context.Background(), BuildConnString(EnvVariables))
 	if err != nil {
 		slog.Warn(err.Error())
-		return &PsqlDatabase{dbInstance: conn}, err
+		return conn
 	}
-	return &PsqlDatabase{dbInstance: conn}, nil
+	return conn
+}
+
+/*
+Description: Close the connection to PostGresql Database
+
+Variables: Database connection
+
+Returns: NA
+*/
+func ClosePsqlDatabase(dbconn *pgx.Conn) {
+	dbconn.Close(context.Background())
 }
