@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"log/slog"
-	"net/http"
+	"pulsepathapi/api/route"
 	"pulsepathapi/bootstrap"
 	"pulsepathapi/db"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,12 +24,6 @@ func main() {
 	defer db.ClosePsqlDatabase(database)
 
 	router := gin.Default()
-
-	router.GET("/ping", ping)
-
+	route.SetupRoutes(env, 3*time.Second, database, router)
 	router.Run(env["APP_URL"] + ":" + env["SERVER_PORT"])
-}
-
-func ping(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "Ping is working"})
 }
